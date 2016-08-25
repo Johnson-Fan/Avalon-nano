@@ -149,14 +149,9 @@ void led_init(void)
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, LED_12V_2F_PORT, LED_12V_2F_PIN);
 
 	led_set(LED_12V_1T, LED_ON);
-	led_set(LED_12V_1F, LED_ON);
-	led_set(LED_12V_2T, LED_ON);
-	led_set(LED_12V_2F, LED_ON);
-	delay(1000);
-	led_set(LED_12V_1T, LED_OFF);
 	led_set(LED_12V_1F, LED_OFF);
 	led_set(LED_12V_2T, LED_OFF);
-	led_set(LED_12V_2F, LED_OFF);
+	led_set(LED_12V_2F, LED_ON);
 }
 
 void led_blink_on(unsigned int led)
