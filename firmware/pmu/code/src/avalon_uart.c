@@ -70,25 +70,12 @@ uint32_t uart_rxrb_cnt(void)
 uint32_t uart_read(uint8_t *pbuf, uint32_t buf_len)
 {
 	uint16_t cnt = 0;
-	uint8_t h1 = 0;
-	uint8_t h2 = 0;
-
-	Chip_UART_ReadRB(LPC_USART, &uart_rxrb, &h1, 1);
-	if (h1 != AVAM_H1)
-	      return 0;
-
-	Chip_UART_ReadRB(LPC_USART, &uart_rxrb, &h2, 1);
-	if (h2 != AVAM_H2)
-	      return 0;
 
 	if (pbuf) {
-		pbuf[0] = h1;
-		pbuf[1] = h2;
-		pbuf += 2;
-		cnt = Chip_UART_ReadRB(LPC_USART, &uart_rxrb, pbuf, (buf_len - 2));
+		cnt = Chip_UART_ReadRB(LPC_USART, &uart_rxrb, pbuf, buf_len);
 	}
 
-	return cnt + 2;
+	return cnt;
 }
 
 /* Send data to uart */

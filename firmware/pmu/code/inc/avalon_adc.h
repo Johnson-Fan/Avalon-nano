@@ -10,6 +10,18 @@
 
 #include "adc_11xx.h"
 
+#define ADC_V12_MIN    980
+#define ADC_V12_MAX    1020
+
+#define ADC_VCORE_MIN  900
+#define ADC_VCORE_MAX  1000
+
+#define ADC_NTC_MIN    900
+#define ADC_NTC_MAX    1000
+
+#define ADC_REF_MIN    700
+#define ADC_REF_MAX    800
+
 #define ADC_CHANNEL_VBASE   (ADC_CH7)
 #define ADC_CHANNEL_NTC1    (ADC_CH3)
 #define ADC_CHANNEL_NTC2    (ADC_CH6)
@@ -26,6 +38,5 @@
 
 void adc_init(void);
 void adc_read(uint8_t channel, uint16_t *data);
-float adc_check(void);
 
 #endif /* __AVALON_ADC_H_ */

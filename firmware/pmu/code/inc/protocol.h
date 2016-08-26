@@ -21,7 +21,7 @@
 #define AVAM_H1 'C'
 #define AVAM_H2 'N'
 
-#define AVAM_P_COUNT       40
+#define AVAM_P_COUNT       1
 #define AVAM_P_DATA_LEN    32
 
 #define AVAM_P_DETECT      0x10

@@ -149,6 +149,67 @@ static void update_adc(void)
 	g_adc_val[i] = (uint16_t)((float)(adc_sum[i] / ADC_DATA_LEN));
 }
 
+static void adc_check(uint8_t id)
+{
+	uint8_t ret = 0xa0;
+	uint8_t i = 0;
+
+	for (i = 0; i < 5; i++)
+		update_adc();
+
+	if (id == 0) {
+		if ((ADC_REF_MIN > g_adc_val[6]) || (ADC_REF_MAX < g_adc_val[6]))
+			ret = 0xa4;
+
+		if ((ADC_NTC_MIN > g_adc_val[0]) || (ADC_NTC_MAX < g_adc_val[0]))
+			ret = 0xa3;
+
+		if ((ADC_V12_MIN > g_adc_val[2]) || (ADC_V12_MAX < g_adc_val[2]))
+			ret = 0xa2;
+
+		if ((ADC_VCORE_MIN > g_adc_val[4]) || (ADC_VCORE_MAX < g_adc_val[4]))
+			ret = 0xa1;
+	} else if (id == 1) {
+		if ((ADC_REF_MIN > g_adc_val[6]) || (ADC_REF_MAX < g_adc_val[6]))
+			ret = 0xa4;
+
+		if ((ADC_NTC_MIN > g_adc_val[1]) || (ADC_NTC_MAX < g_adc_val[1]))
+			ret = 0xa3;
+
+		if ((ADC_V12_MIN > g_adc_val[3]) || (ADC_V12_MAX < g_adc_val[3]))
+			ret = 0xa2;
+
+		if ((ADC_VCORE_MIN > g_adc_val[5]) || (ADC_VCORE_MAX < g_adc_val[5]))
+			ret = 0xa1;
+	}
+
+	g_ackpkg[0] = ret;
+	uart_write(g_ackpkg, AVAM_P_COUNT);
+}
+
+
+static void process_rig_pmu(void)
+{
+	switch (g_reqpkg[0]) {
+	case 0x00:
+		set_voltage(0x0);
+		set_led_state(0x0);
+		break;
+	case 0x51:
+		set_voltage(0x080f);
+		set_led_state(0x0201);
+		adc_check(0);
+		break;
+	case 0x52:
+		set_voltage(0x80f0);
+		set_led_state(0x0102);
+		adc_check(1);
+		break;
+	default:
+		break;
+	}
+}
+
 int main(void)
 {
 	uint8_t stat = STATE_WORK;
@@ -163,8 +224,6 @@ int main(void)
 	uart_init();
 	vcore_init();
 
-	g_adc_ratio = adc_check();
-
 	timer_set(TIMER_ID1, IDLE_TIME, NULL);
 	timer_set(TIMER_ID2, ADC_CAPTIME, NULL);
 	timer_set(TIMER_ID9, VCORE_DETECT_TIME, NULL);
@@ -177,8 +236,7 @@ int main(void)
 				len = uart_read(g_reqpkg, AVAM_P_COUNT);
 				if (len != AVAM_P_COUNT)
 					break;
-
-				process_mm_pkg((struct avalon_pkg*)g_reqpkg);
+				process_rig_pmu();
 			}
 
 			if (timer_istimeout(TIMER_ID1))
